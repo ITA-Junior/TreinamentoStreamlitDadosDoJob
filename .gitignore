@@ -1,0 +1,10 @@
+#impede que essas coisas de ir pro git
+
+#esse arquivo armazena as coisas importantes, permite que a gente use elas e não as exponha no git
+.env
+
+#cache inutil
+__pycache__/
+
+#para caso tenha algum arquivo com dados importantes em csv
+*.csv
