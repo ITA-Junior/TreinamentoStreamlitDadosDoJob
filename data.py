@@ -18,17 +18,35 @@ load_dotenv()
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
-try:
-    supabase: Client = create_client(url, key)
-    
-    #exemplo de uso para retornar valores da tabela
-    #vai em "tabela_para_analise"  e retorna todos os valores("*")
 
-    response = supabase.table("tabela_para_analise").select("*").execute()
+supabase: Client = create_client(url, key)
 
-    #transforma os dados da tabela para um dataframe
+def criar_dataframe(tabela):
+    try:
+        response = supabase.table(tabela).select("*").execute()
 
-    df = pd.DataFrame(response.data)
-except:
-    print('f')
+        return pd.DataFrame(response.data)
+        
+    except Exception as e:
+        print(f"Erro: {e}")
+
+
+
+#df_returns = criar_dataframe("Returns")
+df_orders = criar_dataframe("orders")
+#df_people = criar_dataframe("people")
+
+def q1(df_orders):
+    office = df_orders[df_orders["Category"] == "Office Supplies"]
+
+    resultado = (office.groupby("City")["Sales"]
+    .sum()
+    .sort_values(ascending = False))
+
+    return{
+        "cidade": resultado.idxmax(),
+        "valor": resultado.max()
+    }
+   
+
 
