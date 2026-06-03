@@ -6,4 +6,9 @@ import data
 
 st.header("DADOS DO JOOOOBBBBB 🎲🎲🍆🥛")
 
-st.dataframe(data.df)
+st.write("Tabela de Returns")
+st.dataframe(data.Returns)
+st.write("Tabela de orders")
+st.dataframe(data.orders)
+st.write("Tabela de people")
+st.dataframe(data.people)

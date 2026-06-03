@@ -19,16 +19,21 @@ load_dotenv()
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 try:
-    supabase: Client = create_client(url, key)
+    supabase: Client = create_client(url, key) # type: ignore
     
     #exemplo de uso para retornar valores da tabela
     #vai em "tabela_para_analise"  e retorna todos os valores("*")
 
-    response = supabase.table("tabela_para_analise").select("*").execute()
+    Returns = supabase.table("Returns").select("*").execute()
+    orders = supabase.table("orders").select("*").execute()
+    people = supabase.table("people").select("*").execute()
 
     #transforma os dados da tabela para um dataframe
 
-    df = pd.DataFrame(response.data)
-except:
-    print('f')
+    Returns = pd.DataFrame(Returns.data)
+    orders = pd.DataFrame(orders.data)
+    people = pd.DataFrame(people.data)
+    print(Returns)
+except Exception as e:
+    print(e)
 

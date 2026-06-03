@@ -1,4 +1,5 @@
 import pandas as pd
+from data import *
 
 def q1(df: pd.DataFrame):
     pass
