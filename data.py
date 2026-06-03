@@ -63,13 +63,56 @@ def q2(df_orders):
         .sort_values("Order Date")
     )
 
+
 def q3(df_orders):
     return(
         df_orders.groupby("State")["Sales"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending =False)
+        .sort_values("Sales", ascending = False)
         .reset_index(drop = True)
     )
 
+
+def q4(df_orders):
+
+    return(
+        df_orders.groupby("City")["Sales"]
+        .sum()
+        .reset_index()
+        .sort_values("Sales", ascending = False)
+        .head(10)
+        .reset_index(drop = True)
+    )
+
+
+def q7(df_orders):
+
+    return (df_orders["Sales"] > 1000).sum()
+
+
+def q8(df_orders):
+    
+    #considerando que esta sendo requisitado apenas a media dos valores com desconto de 15%
+    vendas_15 = (df_orders["Sales"] > 1000)
+
+    media_antes = vendas_15.mean()
+    media_depois = (vendas_15*0.85).mean()
+
+    return{
+        "media_antes": media_antes,
+        "media_depois": media_depois
+    }
+
+
+def q10(df_orders):
+
+    return(
+        df_orders.groupby(["Category", "Sub-Category"])["Sales"]
+        .sum()
+        .reset_index()
+        .sort_values("Sales", ascending = False)
+        .head(12)
+        .reset_index(drop = True)
+    )
 
