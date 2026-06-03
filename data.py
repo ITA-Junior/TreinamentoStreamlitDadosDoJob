@@ -31,15 +31,16 @@ def criar_dataframe(tabela):
         print(f"Erro: {e}")
 
 
-
 #df_returns = criar_dataframe("Returns")
 df_orders = criar_dataframe("orders")
 #df_people = criar_dataframe("people")
 
-def q1(df_orders):
-    office = df_orders[df_orders["Category"] == "Office Supplies"]
 
-    resultado = (office.groupby("City")["Sales"]
+
+def q1(df_orders):
+    df_office = df_orders[df_orders["Category"] == "Office Supplies"]
+
+    resultado = (df_office.groupby("City")["Sales"]
     .sum()
     .sort_values(ascending = False))
 
@@ -48,5 +49,27 @@ def q1(df_orders):
         "valor": resultado.max()
     }
    
+
+def q2(df_orders):
+    df = df_orders.copy()
+
+    df["Order Date"] = pd.to_datetime(df["Order Date"])
+
+    return(
+
+        df.groupby("Order Date")["Sales"]
+        .sum()
+        .reset_index()
+        .sort_values("Order Date")
+    )
+
+def q3(df_orders):
+    return(
+        df_orders.groupby("State")["Sales"]
+        .sum()
+        .reset_index()
+        .sort_values("Sales", ascending =False)
+        .reset_index(drop = True)
+    )
 
 
