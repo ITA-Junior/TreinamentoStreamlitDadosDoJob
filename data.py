@@ -6,7 +6,7 @@ from supabase import create_client, Client
 
 #como instalar elas
 
-#pip install supabase
+#pip instalSalesl supabase
 #pip install python dotenv
 #pip install pandas
 #pip install streamlit
@@ -22,25 +22,28 @@ key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 def criar_dataframe(tabela):
+
     try:
         response = supabase.table(tabela).select("*").execute()
 
-        return pd.DataFrame(response.data)
+        df = pd.DataFrame(response.data)
+
+        if (tabela == "orders"):
+            df["Total Sales"] = df["Sales"] * df["Quantity"]
         
+        return df
+    
     except Exception as e:
         print(f"Erro: {e}")
 
 
-#df_returns = criar_dataframe("Returns")
 df_orders = criar_dataframe("orders")
-#df_people = criar_dataframe("people")
-
 
 
 def q1(df_orders):
     df_office = df_orders[df_orders["Category"] == "Office Supplies"]
 
-    resultado = (df_office.groupby("City")["Sales"]
+    resultado = (df_office.groupby("City")["Total Sales"]
     .sum()
     .sort_values(ascending = False))
 
@@ -48,28 +51,30 @@ def q1(df_orders):
         "cidade": resultado.idxmax(),
         "valor": resultado.max()
     }
-   
+
 
 def q2(df_orders):
+
     df = df_orders.copy()
 
     df["Order Date"] = pd.to_datetime(df["Order Date"])
 
     return(
 
-        df.groupby("Order Date")["Sales"]
+        df.groupby("Order Date")["Total Sales"]
         .sum()
         .reset_index()
         .sort_values("Order Date")
     )
-
+   
 
 def q3(df_orders):
+
     return(
-        df_orders.groupby("State")["Sales"]
+        df_orders.groupby("State")["Total Sales"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending = False)
+        .sort_values("Total Sales", ascending = False)
         .reset_index(drop = True)
     )
 
@@ -77,29 +82,61 @@ def q3(df_orders):
 def q4(df_orders):
 
     return(
-        df_orders.groupby("City")["Sales"]
+        df_orders.groupby("City")["Total Sales"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending = False)
+        .sort_values("Total Sales", ascending = False)
         .head(10)
         .reset_index(drop = True)
     )
 
 
+def q5(df_orders):
+
+    return(
+        df_orders.groupby("Segment")["Total Sales"]
+        .sum()
+        .reset_index()
+        .sort_values("Total Sales", ascending = False)
+    )
+
+
+def q6(df_orders):
+
+    df_copia = df_orders.copy()
+
+    df_copia["Order Date"] = pd.to_datetime(df_copia["Order Date"])
+    df_copia["Year"] = df_copia["Order Date"].dt.year
+
+    return(
+        df_copia.groupby(["Segment", "Year" ])["Total Sales"]
+        .sum()
+        .reset_index()
+        .sort_values(["Year", "Segment"])
+    )
+
+
 def q7(df_orders):
 
-    return (df_orders["Sales"] > 1000).sum()
+    return{ 
+        
+        "Qtd com 15% de desconto": (df_orders["Total Sales"] > 1000).sum(),
+        "Qtd com 10% de desconto": (df_orders["Total Sales"] <= 1000).sum()
+    }
 
 
 def q8(df_orders):
     
-    media_antes = df_orders["Sales"].mean()
+    media_antes = df_orders["Total Sales"].mean()
+
+    # X = A.where(condicao, B)
+    # se a condicao for cumprida, X = A, se nao, X = B
 
     vendas_com_desconto = (
-        df_orders["Sales"] * 0.85
+        df_orders["Total Sales"] * 0.85
     ).where(
-        df_orders["Sales"] > 1000,
-        df_orders["Sales"] * 0.90
+        df_orders["Total Sales"] > 1000,
+        df_orders["Total Sales"] * 0.90
     )
 
     media_depois = vendas_com_desconto.mean()
@@ -107,15 +144,34 @@ def q8(df_orders):
     return {
         "media_antes": media_antes,
         "media_depois": media_depois
+
 }
+
+
+def q9(df_orders):
+
+    df_copia = df_orders.copy()
+    df_copia["Order Date"] = pd.to_datetime(df_copia["Order Date"])
+
+    df_copia["Year"] = df_copia["Order Date"].dt.year
+    df_copia["Month"] = df_copia["Order Date"].dt.month
+
+    return(
+        df_copia.groupby(["Segment", "Year", "Month"])["Total Sales"]
+        .mean()
+        .reset_index()
+        .sort_values(["Year", "Month", "Segment"])
+        .reset_index(drop = True)
+    )
+
 
 def q10(df_orders):
 
     return(
-        df_orders.groupby(["Category", "Sub-Category"])["Sales"]
+        df_orders.groupby(["Category", "Sub-Category"])["Total Sales"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending = False)
+        .sort_values("Total Sales", ascending = False)
         .head(12)
         .reset_index(drop = True)
     )
