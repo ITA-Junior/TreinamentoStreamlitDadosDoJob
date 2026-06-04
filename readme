@@ -22,7 +22,7 @@ load_dotenv()
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+supabase: Client = create_client(url, key) # type: ignore
 
 #exemplo de uso para retornar valores da tabela
 #vai em "tabela_para_analise"  e retorna todos os valores("*")

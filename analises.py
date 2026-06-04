@@ -6,57 +6,27 @@ from supabase import create_client, Client
 
 #como instalar elas
 
-#pip install supabase
-#pip install python dotenv
-#pip install pandas
-#pip install streamlit
+def q1(df) -> dict:
+    df_office = df[df["Category"] == "Office Supplies"]
 
-#carregar as variaveis ambiente
-load_dotenv()
+    resultado = (
+        df_office.groupby("City")["Sales"]
+        .sum()
+        .sort_values(ascending = False)
+    )
 
-#cabecalho do supabase
-
-url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_KEY")
-
-supabase: Client = create_client(url, key)
-
-def criar_dataframe(tabela):
-    try:
-        response = supabase.table(tabela).select("*").execute()
-
-        return pd.DataFrame(response.data)
-        
-    except Exception as e:
-        print(f"Erro: {e}")
-
-
-#df_returns = criar_dataframe("Returns")
-df_orders = criar_dataframe("orders")
-#df_people = criar_dataframe("people")
-
-
-
-def q1(df_orders):
-    df_office = df_orders[df_orders["Category"] == "Office Supplies"]
-
-    resultado = (df_office.groupby("City")["Sales"]
-    .sum()
-    .sort_values(ascending = False))
-
-    return{
+    return {
         "cidade": resultado.idxmax(),
         "valor": resultado.max()
     }
    
 
-def q2(df_orders):
-    df = df_orders.copy()
+def q2(df) -> pd.DataFrame:
+    df = df.copy()
 
     df["Order Date"] = pd.to_datetime(df["Order Date"])
 
-    return(
-
+    return (
         df.groupby("Order Date")["Sales"]
         .sum()
         .reset_index()
@@ -64,9 +34,9 @@ def q2(df_orders):
     )
 
 
-def q3(df_orders):
-    return(
-        df_orders.groupby("State")["Sales"]
+def q3(df) -> pd.DataFrame:
+    return (
+        df.groupby("State")["Sales"]
         .sum()
         .reset_index()
         .sort_values("Sales", ascending = False)
@@ -74,10 +44,9 @@ def q3(df_orders):
     )
 
 
-def q4(df_orders):
-
-    return(
-        df_orders.groupby("City")["Sales"]
+def q4(df):
+    return (
+        df.groupby("City")["Sales"]
         .sum()
         .reset_index()
         .sort_values("Sales", ascending = False)
@@ -86,20 +55,20 @@ def q4(df_orders):
     )
 
 
-def q7(df_orders):
+def q7(df):
 
-    return (df_orders["Sales"] > 1000).sum()
+    return (df["Sales"] > 1000).sum()
 
 
-def q8(df_orders):
+def q8(df):
     
-    media_antes = df_orders["Sales"].mean()
+    media_antes = df["Sales"].mean()
 
     vendas_com_desconto = (
-        df_orders["Sales"] * 0.85
+        df["Sales"] * 0.85
     ).where(
-        df_orders["Sales"] > 1000,
-        df_orders["Sales"] * 0.90
+        df["Sales"] > 1000,
+        df["Sales"] * 0.90
     )
 
     media_depois = vendas_com_desconto.mean()
@@ -107,13 +76,13 @@ def q8(df_orders):
     return {
         "media_antes": media_antes,
         "media_depois": media_depois
-}
+    }
 
 
-def q10(df_orders):
+def q10(df):
 
-    return(
-        df_orders.groupby(["Category", "Sub-Category"])["Sales"]
+    return (
+        df.groupby(["Category", "Sub-Category"])["Sales"]
         .sum()
         .reset_index()
         .sort_values("Sales", ascending = False)

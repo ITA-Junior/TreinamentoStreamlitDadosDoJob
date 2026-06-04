@@ -11,6 +11,7 @@ from supabase import create_client, Client
 #pip install pandas
 #pip install streamlit
 
+#cabecalho do supabase
 #carregar as variaveis ambiente
 load_dotenv()
 
@@ -18,22 +19,14 @@ load_dotenv()
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
-try:
-    supabase: Client = create_client(url, key) # type: ignore
-    
-    #exemplo de uso para retornar valores da tabela
-    #vai em "tabela_para_analise"  e retorna todos os valores("*")
 
-    Returns = supabase.table("Returns").select("*").execute()
-    orders = supabase.table("orders").select("*").execute()
-    people = supabase.table("people").select("*").execute()
+supabase: Client = create_client(url, key) # type: ignore
 
-    #transforma os dados da tabela para um dataframe
+def criar_dataframe(tabela):
+    try:
+        response = supabase.table(tabela).select("*").execute()
 
-    Returns = pd.DataFrame(Returns.data)
-    orders = pd.DataFrame(orders.data)
-    people = pd.DataFrame(people.data)
-    print(Returns)
-except Exception as e:
-    print(e)
-
+        return pd.DataFrame(response.data)
+        
+    except Exception as e:
+        print(f"Erro: {e}")
