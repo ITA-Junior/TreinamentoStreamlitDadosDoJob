@@ -93,16 +93,21 @@ def q7(df_orders):
 
 def q8(df_orders):
     
-    #considerando que esta sendo requisitado apenas a media dos valores com desconto de 15%
-    vendas_15 = (df_orders["Sales"] > 1000)
+    media_antes = df_orders["Sales"].mean()
 
-    media_antes = vendas_15.mean()
-    media_depois = (vendas_15*0.85).mean()
+    vendas_com_desconto = (
+        df_orders["Sales"] * 0.85
+    ).where(
+        df_orders["Sales"] > 1000,
+        df_orders["Sales"] * 0.90
+    )
 
-    return{
+    media_depois = vendas_com_desconto.mean()
+
+    return {
         "media_antes": media_antes,
         "media_depois": media_depois
-    }
+}
 
 
 def q10(df_orders):
