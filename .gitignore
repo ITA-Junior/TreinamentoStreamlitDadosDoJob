@@ -1,10 +1,23 @@
-#impede que essas coisas de ir pro git
+# Ambiente virtual
+.venv/
+env/
+venv/
+ENV/
 
-#esse arquivo armazena as coisas importantes, permite que a gente use elas e não as exponha no git
+# Credenciais — NUNCA commitar
 .env
 
-#cache inutil
+# Python cache
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
 
-#para caso tenha algum arquivo com dados importantes em csv
-*.csv
+# Streamlit cache
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
