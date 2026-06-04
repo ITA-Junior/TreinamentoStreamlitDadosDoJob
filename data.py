@@ -23,10 +23,17 @@ key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key) # type: ignore
 
 def criar_dataframe(tabela):
+
     try:
         response = supabase.table(tabela).select("*").execute()
 
-        return pd.DataFrame(response.data)
+        df = pd.DataFrame(response.data)
+
+        if (tabela == "orders"):
+            df["Total Sales"] = df["Sales"] * df["Quantity"]
         
+        return df
+    
     except Exception as e:
         print(f"Erro: {e}")
+
