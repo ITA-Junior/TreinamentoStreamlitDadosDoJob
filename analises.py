@@ -6,13 +6,20 @@ from supabase import create_client, Client
 
 #como instalar elas
 
-def q1(df) -> dict:
-    df_office = df[df["Category"] == "Office Supplies"]
+def q1(df_orders):
+
+    df_office = df_orders[
+        df_orders["Category"] == "Office Supplies"
+    ].copy()
+
+    df_office["Valor_Venda"] = (
+        df_office["Sales"] * df_office["Quantity"]
+    )
 
     resultado = (
-        df_office.groupby("City")["Sales"]
+        df_office.groupby("City")["Valor_Venda"]
         .sum()
-        .sort_values(ascending = False)
+        .sort_values(ascending=False)
     )
 
     return {
@@ -21,54 +28,80 @@ def q1(df) -> dict:
     }
    
 
-def q2(df) -> pd.DataFrame:
-    df = df.copy()
+def q2(df_orders):
+    df = df_orders.copy()
 
     df["Order Date"] = pd.to_datetime(df["Order Date"])
 
+    df["Valor_Venda"] = (
+        df["Sales"] * df["Quantity"]
+    )
+
     return (
-        df.groupby("Order Date")["Sales"]
+        df.groupby("Order Date")["Valor_Venda"]
         .sum()
         .reset_index()
         .sort_values("Order Date")
     )
 
 
-def q3(df) -> pd.DataFrame:
+def q3(df_orders):
+
+    df = df_orders.copy()
+
+    df["Valor_Venda"] = (
+        df["Sales"] * df["Quantity"]
+    )
+
     return (
-        df.groupby("State")["Sales"]
+        df.groupby("State")["Valor_Venda"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending = False)
-        .reset_index(drop = True)
+        .sort_values("Valor_Venda", ascending=False)
+        .reset_index(drop=True)
     )
 
 
-def q4(df):
+def q4(df_orders):
+
+    df = df_orders.copy()
+
+    df["Valor_Venda"] = (
+        df["Sales"] * df["Quantity"]
+    )
+
     return (
-        df.groupby("City")["Sales"]
+        df.groupby("City")["Valor_Venda"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending = False)
+        .sort_values("Valor_Venda", ascending=False)
         .head(10)
-        .reset_index(drop = True)
+        .reset_index(drop=True)
     )
 
 
-def q7(df):
+def q7(df_orders):
 
-    return (df["Sales"] > 1000).sum()
+    valor_venda = (
+        df_orders["Sales"] * df_orders["Quantity"]
+    )
+
+    return int((valor_venda > 1000).sum())
 
 
-def q8(df):
-    
-    media_antes = df["Sales"].mean()
+def q8(df_orders):
+
+    valor_venda = (
+        df_orders["Sales"] * df_orders["Quantity"]
+    )
+
+    media_antes = valor_venda.mean()
 
     vendas_com_desconto = (
-        df["Sales"] * 0.85
+        valor_venda * 0.85
     ).where(
-        df["Sales"] > 1000,
-        df["Sales"] * 0.90
+        valor_venda > 1000,
+        valor_venda * 0.90
     )
 
     media_depois = vendas_com_desconto.mean()
@@ -78,14 +111,19 @@ def q8(df):
         "media_depois": media_depois
     }
 
+def q10(df_orders):
 
-def q10(df):
+    df = df_orders.copy()
+
+    df["Valor_Venda"] = (
+        df["Sales"] * df["Quantity"]
+    )
 
     return (
-        df.groupby(["Category", "Sub-Category"])["Sales"]
+        df.groupby(["Category", "Sub-Category"])["Valor_Venda"]
         .sum()
         .reset_index()
-        .sort_values("Sales", ascending = False)
+        .sort_values("Valor_Venda", ascending=False)
         .head(12)
-        .reset_index(drop = True)
+        .reset_index(drop=True)
     )
